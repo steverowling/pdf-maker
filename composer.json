@@ -1,0 +1,45 @@
+{
+    "name": "springworks/pdf-maker",
+    "description": "PDF creation using api2pdf v2",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "pdf maker"
+    ],
+    "support": {
+        "docs": "https://github.com/steverowling/pdf-maker/blob/master/README.md",
+        "issues": "https://github.com/steverowling/pdf-maker/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Steve Rowling",
+            "homepage": "https://springworks.co.uk"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0",
+        "api2pdf/api2pdf.php": "2.0.2"
+    },
+    "autoload": {
+        "psr-4": {
+          "springworks\\pdfmaker\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Pdf Maker",
+        "handle": "pdf-maker",
+        "developer": "Steve Rowling",
+        "developerUrl": "https://springworks.co.uk",
+        "documentationUrl": "https://github.com/steverowling/pdf-maker/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/steverowling/pdf-maker/master/CHANGELOG.md",
+        "components": {
+            "pdf": "springworks\\pdfmaker\\services\\Pdf"
+        },
+        "class": "springworks\\pdfmaker\\PdfMaker"
+    }
+}

@@ -1,0 +1,50 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Pdf Maker plugin for Craft CMS 3.x
+ *
+ * Pdf Maker Settings.twig
+ *
+ * @author    Steve Rowling
+ * @copyright Copyright (c) 2022 Steve Rowling
+ * @link      https://springworks.co.uk
+ * @package   PdfMaker
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{{ forms.autosuggestField({
+        label: 'API Key',
+        instructions: 'Your API key from api2pdf.com',
+        id: 'apiKey',
+        name: 'apiKey',
+        class: 'code',
+        placeholder: 'a0a000a-00aa-00aa-000-a00aa00a00aa',
+        value: settings.apiKey,
+        suggestEnvVars: true
+    })
+}}
+
+{% if craft.pdfMaker.isFormieEnabled %}
+    {{ forms.lightswitchField({
+        label: 'Formie integration',
+        instructions: 'Use api2pdf.com to generate Formie submission PDFs',
+        id: 'formieIntegration',
+        name: 'formieIntegration',
+        on: settings.formieIntegration
+    })
+    }}
+{% endif %}
+
+{% if craft.pdfMaker.isCommerceEnabled %}
+    {{ forms.lightswitchField({
+        label: 'Craft Commerce integration',
+        instructions: 'Use api2pdf.com to generate Craft Commerce PDFs',
+        id: 'commerceIntegration',
+        name: 'commerceIntegration',
+        on: settings.commerceIntegration
+    })
+    }}
+{% endif %}
