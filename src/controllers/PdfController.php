@@ -13,6 +13,11 @@ namespace springworks\pdfmaker\controllers;
 use Craft;
 use craft\web\Controller;
 use springworks\pdfmaker\PdfMaker;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use yii\base\Exception;
+use yii\web\BadRequestHttpException;
 use yii\web\HttpException;
 use yii\web\RangeNotSatisfiableHttpException;
 use yii\web\Response;
@@ -65,6 +70,33 @@ class PdfController extends Controller
         $options = $this->_getOptions($request);
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->generateFromHtml($htmlString, $inline, $filename, $options);
+
+        return $this->_formatResponse($result, $redirect, $inline, $filename);
+    }
+
+    /**
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws Exception
+     * @throws BadRequestHttpException
+     */
+    public function actionGenerateFromTemplate(): Response
+    {
+        $request = Craft::$app->getRequest();
+        $template = $request->getValidatedBodyParam('template') ?? '';
+        $variables = $request->getBodyParam('variables') ?? [];
+        $validatedVariables = [];
+        $security = Craft::$app->getSecurity();
+        foreach ($variables as $key => $value) {
+            $validatedVariables[$key] = $security->validateData($value);
+        }
+        $inline = $this->_getInline($request);
+        $filename = $this->_getFilename($request);
+        $options = $this->_getOptions($request);
+        $redirect = $this->_getRedirect($request);
+        $result = PdfMaker::$plugin->pdf->generateFromTemplate($template, $validatedVariables, $inline, $filename, $options);
 
         return $this->_formatResponse($result, $redirect, $inline, $filename);
     }

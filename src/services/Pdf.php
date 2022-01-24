@@ -84,44 +84,6 @@ class Pdf extends Component
         ];
     }
 
-//    /**
-//     * @return string
-//     * @throws LoaderError
-//     * @throws RuntimeError
-//     * @throws SyntaxError
-//     * @throws Exception
-//     */
-//    public function renderPdfTemplateHtml(): string
-//    {
-//        // https://docs.craftcms.com/v3/extend/updating-plugins.html#rendering-templates
-//
-//        /*
-//        // For using templates within the plugin
-//        $oldMode = \Craft::$app->view->getTemplateMode();
-//        \Craft::$app->view->setTemplateMode(View::TEMPLATE_MODE_CP);
-//        // Strangely, it seems necessary to leave out `templates/`
-//        $templatePath = 'api2pdf/pdf.twig';
-//        $pdfHtml = \Craft::$app->view->renderTemplate($templatePath, [
-//          'body' => 'Example body from plugin'
-//        ]);
-//        \Craft::$app->view->setTemplateMode($oldMode);
-//        */
-//
-//        // Using templates from the site
-//        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
-//
-//        // TODO The specific template and the variables need
-//        // to be passed along as arguments
-//        $pdfHtml = Craft::$app->getView()->renderTemplate(
-//            "/pdf/proof-letter.twig",
-//            [
-//                'body' => 'Testing'
-//            ]
-//        );
-//
-//        return $pdfHtml;
-//    }
-
     /**
      * @param string $url
      * @param bool $inline
@@ -158,23 +120,59 @@ class Pdf extends Component
      */
     public function generateFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
     {
-        // if ($html !== '') {
-        //   $pdfHtml = $this->renderPdfTemplateHtml();
-        // } else {
-        // TODO Remove support for the $html argument from Twig, once it’s
-        // possible to supply your own templates, ex. we get them from your
-        // templates/api2pdf directory or whatever
-        $pdfHtml = $html;
-        // }
-
         $apiClient = $this->_getClient();
 
-        if (!$pdfHtml) {
+        if (!$html) {
             return [ "success" => false, "error" => "No HTML provided." ];
         }
 
         try {
-            $response = $apiClient->chromeHtmlToPdf($pdfHtml, $inline, $filename, $options);
+            $response = $apiClient->chromeHtmlToPdf($html, $inline, $filename, $options);
+        } catch (Api2PdfException $e) {
+            $response = [ "success" => false, "error" => $e->getMessage() ];
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $template
+     * @param array $variables
+     * @param bool $inline
+     * @param string $filename
+     * @param array $options
+     * @return Api2PdfResult|array
+     * @throws Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function generateFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
+    {
+        $apiClient = $this->_getClient();
+
+        if (!$template) {
+            return [ "success" => false, "error" => "No template provided." ];
+        }
+
+        $view = Craft::$app->getView();
+
+        $oldMode = $view->getTemplateMode();
+        $view->setTemplateMode(View::TEMPLATE_MODE_SITE);
+
+        if (!$view->doesTemplateExist($template)) {
+            return [ "success" => false, "error" => "No template found." ];
+        }
+
+        $html = $view->renderTemplate($template, $variables);
+
+        $view->setTemplateMode($oldMode);
+
+        if (!$html) {
+            return [ "success" => false, "error" => "Template could not be rendered." ];
+        }
+
+        try {
+            $response = $apiClient->chromeHtmlToPdf($html, $inline, $filename, $options);
         } catch (Api2PdfException $e) {
             $response = [ "success" => false, "error" => $e->getMessage() ];
         }
