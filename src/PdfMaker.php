@@ -172,7 +172,7 @@ class PdfMaker extends Plugin
                         }
                     }
 
-                    $pdfResponse = $this->pdf->generateFromHtml($html, false, '', []);
+                    $pdfResponse = $this->pdf->pdfFromHtml($html, false, '', []);
 
                     $event->pdf = null;
 
@@ -219,7 +219,7 @@ class PdfMaker extends Plugin
                     // Restore the original template mode
                     $view->setTemplateMode($oldTemplateMode);
 
-                    $pdfResponse = $this->pdf->generateFromHtml($html, false, '', []);
+                    $pdfResponse = $this->pdf->pdfFromHtml($html, false, '', []);
 
                     $event->pdf = null;
 
