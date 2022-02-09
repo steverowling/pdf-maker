@@ -35,7 +35,7 @@ Default PDF creation options are set in the config file. Rename `config.php` to 
 ```twig
 <form method="post" action="" accept-charset="UTF-8">
     {{ csrfInput() }}
-    <input type="hidden" name="action" value="pdf-maker/pdf/generate-from-url">
+    <input type="hidden" name="action" value="pdf-maker/pdf/pdf-from-url">
     <input type="hidden" name="url" value="https://example.com" />
     
     {# Set the filename (optional) #}
@@ -54,7 +54,7 @@ Default PDF creation options are set in the config file. Rename `config.php` to 
 ```twig
 <form method="post" action="" accept-charset="UTF-8">
     {{ csrfInput() }}
-    <input type="hidden" name="action" value="pdf-maker/pdf/generate-from-html">
+    <input type="hidden" name="action" value="pdf-maker/pdf/pdf-from-html">
     <input type="hidden" name="html" value="<p>HTML content for PDF</p>" />
     
     {# Set the filename (optional) #}
@@ -81,7 +81,7 @@ Full example:
 ```twig
 <form method="post" action="" accept-charset="UTF-8">
     {{ csrfInput() }}
-    <input type="hidden" name="action" value="pdf-maker/pdf/generate-from-template">
+    <input type="hidden" name="action" value="pdf-maker/pdf/pdf-from-template">
     <input type="hidden" name="template" value="{{ 'path/to/template'|hash }}" />
     <input type="hidden" name="variables[entryId]" value="{{ entry.id|hash }}" />
     <input type="hidden" name="variables[someVariable]" value="{{ 'value'|hash }}" />

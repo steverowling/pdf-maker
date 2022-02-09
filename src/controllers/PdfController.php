@@ -61,15 +61,15 @@ class PdfController extends Controller
     /**
      * @return Response
      */
-    public function actionGenerateFromHtml(): Response
+    public function actionPdfFromHtml(): Response
     {
         $request = Craft::$app->getRequest();
         $htmlString = $request->getParam('html');
         $inline = $this->_getInline($request);
         $filename = $this->_getFilename($request);
-        $options = $this->_getOptions($request);
+        $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
-        $result = PdfMaker::$plugin->pdf->generateFromHtml($htmlString, $inline, $filename, $options);
+        $result = PdfMaker::$plugin->pdf->pdfFromHtml($htmlString, $inline, $filename, $options);
 
         return $this->_formatResponse($result, $redirect, $inline, $filename);
     }
@@ -82,7 +82,7 @@ class PdfController extends Controller
      * @throws Exception
      * @throws BadRequestHttpException
      */
-    public function actionGenerateFromTemplate(): Response
+    public function actionPdfFromTemplate(): Response
     {
         $request = Craft::$app->getRequest();
         $template = $request->getValidatedBodyParam('template') ?? '';
@@ -94,9 +94,9 @@ class PdfController extends Controller
         }
         $inline = $this->_getInline($request);
         $filename = $this->_getFilename($request);
-        $options = $this->_getOptions($request);
+        $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
-        $result = PdfMaker::$plugin->pdf->generateFromTemplate($template, $validatedVariables, $inline, $filename, $options);
+        $result = PdfMaker::$plugin->pdf->pdfFromTemplate($template, $validatedVariables, $inline, $filename, $options);
 
         return $this->_formatResponse($result, $redirect, $inline, $filename);
     }
@@ -104,15 +104,15 @@ class PdfController extends Controller
     /**
      * @return Response
      */
-    public function actionGenerateFromUrl(): Response
+    public function actionPdfFromUrl(): Response
     {
         $request = Craft::$app->getRequest();
         $url = $request->getParam('url');
         $inline = $this->_getInline($request);
         $filename = $this->_getFilename($request);
-        $options = $this->_getOptions($request);
+        $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
-        $result = PdfMaker::$plugin->pdf->generateFromUrl($url, $inline, $filename, $options);
+        $result = PdfMaker::$plugin->pdf->pdfFromUrl($url, $inline, $filename, $options);
 
         return $this->_formatResponse($result, $redirect, $inline, $filename);
     }
@@ -129,9 +129,68 @@ class PdfController extends Controller
         }
         $inline = $this->_getInline($request);
         $filename = $this->_getFilename($request);
-        $options = $this->_getOptions($request);
+        $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->merge($urls, $inline, $filename, $options);
+
+        return $this->_formatResponse($result, $redirect, $inline, $filename);
+    }
+
+    /**
+     * @return Response
+     */
+    public function actionImageFromHtml(): Response
+    {
+        $request = Craft::$app->getRequest();
+        $htmlString = $request->getParam('html');
+        $inline = $this->_getInline($request);
+        $filename = $this->_getFilename($request);
+        $options = $this->_getOptions($request, 'image');
+        $redirect = $this->_getRedirect($request);
+        $result = PdfMaker::$plugin->pdf->imageFromHtml($htmlString, $inline, $filename, $options);
+
+        return $this->_formatResponse($result, $redirect, $inline, $filename);
+    }
+
+    /**
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws Exception
+     * @throws BadRequestHttpException
+     */
+    public function actionImageFromTemplate(): Response
+    {
+        $request = Craft::$app->getRequest();
+        $template = $request->getValidatedBodyParam('template') ?? '';
+        $variables = $request->getBodyParam('variables') ?? [];
+        $validatedVariables = [];
+        $security = Craft::$app->getSecurity();
+        foreach ($variables as $key => $value) {
+            $validatedVariables[$key] = $security->validateData($value);
+        }
+        $inline = $this->_getInline($request);
+        $filename = $this->_getFilename($request);
+        $options = $this->_getOptions($request, 'image');
+        $redirect = $this->_getRedirect($request);
+        $result = PdfMaker::$plugin->pdf->imageFromTemplate($template, $validatedVariables, $inline, $filename, $options);
+
+        return $this->_formatResponse($result, $redirect, $inline, $filename);
+    }
+
+    /**
+     * @return Response
+     */
+    public function actionImageFromUrl(): Response
+    {
+        $request = Craft::$app->getRequest();
+        $url = $request->getParam('url');
+        $inline = $this->_getInline($request);
+        $filename = $this->_getFilename($request);
+        $options = $this->_getOptions($request, 'image');
+        $redirect = $this->_getRedirect($request);
+        $result = PdfMaker::$plugin->pdf->imageFromUrl($url, $inline, $filename, $options);
 
         return $this->_formatResponse($result, $redirect, $inline, $filename);
     }
@@ -160,17 +219,21 @@ class PdfController extends Controller
 
     /**
      * @param $request
+     * @param $type
      * @return array
      */
-    private function _getOptions($request): array
+    private function _getOptions($request, $type): array
     {
-        $defaultOptions = PdfMaker::$plugin->getSettings()->options;
+        $defaultOptions = PdfMaker::$plugin->getSettings()->options[$type];
         $options = $request->getParam('options');
         if (!$options) {
             $options = [];
         }
         if (isset($options['landscape'])) {
             $options['landscape'] = (bool) $options['landscape'];
+        }
+        if (isset($options['fullPage'])) {
+            $options['fullPage'] = (bool) $options['fullPage'];
         }
         return array_merge($defaultOptions, $options);
     }

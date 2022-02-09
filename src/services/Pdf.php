@@ -91,7 +91,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function generateFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = [])
     {
         $apiClient = $this->_getClient();
 
@@ -118,7 +118,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function generateFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
     {
         $apiClient = $this->_getClient();
 
@@ -146,29 +146,14 @@ class Pdf extends Component
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function generateFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
     {
         $apiClient = $this->_getClient();
 
-        if (!$template) {
-            return [ "success" => false, "error" => "No template provided." ];
-        }
+        $html = $this->_getHtmlFromTemplate($template, $variables);
 
-        $view = Craft::$app->getView();
-
-        $oldMode = $view->getTemplateMode();
-        $view->setTemplateMode(View::TEMPLATE_MODE_SITE);
-
-        if (!$view->doesTemplateExist($template)) {
-            return [ "success" => false, "error" => "No template found." ];
-        }
-
-        $html = $view->renderTemplate($template, $variables);
-
-        $view->setTemplateMode($oldMode);
-
-        if (!$html) {
-            return [ "success" => false, "error" => "Template could not be rendered." ];
+        if ($html && is_array($html)) {
+            return $html;
         }
 
         try {
@@ -207,5 +192,121 @@ class Pdf extends Component
             $response = [ "success" => false, "error" => $e->getMessage() ];
         }
         return $response;
+    }
+
+    /**
+     * @param string $url
+     * @param bool $inline
+     * @param string $filename
+     * @param array $options
+     * @return Api2PdfResult|array
+     */
+    public function imageFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = [])
+    {
+        $apiClient = $this->_getClient();
+
+        if (!$url) {
+            return [ "success" => false, "error" => "No URL provided." ];
+        }
+
+        if ($this->_getIsLocalUrl($url)) {
+            return $this->_getLocalUrlResponse($url);
+        }
+
+        try {
+            $response = $apiClient->chromeUrlToImage($url, $inline, $filename, $options);
+        } catch (Api2PdfException $e) {
+            $response = [ "success" => false, "error" => $e->getMessage() ];
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $html
+     * @param bool $inline
+     * @param string $filename
+     * @param array $options
+     * @return Api2PdfResult|array
+     */
+    public function imageFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
+    {
+        $apiClient = $this->_getClient();
+
+        if (!$html) {
+            return [ "success" => false, "error" => "No HTML provided." ];
+        }
+
+        try {
+            $response = $apiClient->chromeHtmlToImage($html, $inline, $filename, $options);
+        } catch (Api2PdfException $e) {
+            $response = [ "success" => false, "error" => $e->getMessage() ];
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $template
+     * @param array $variables
+     * @param bool $inline
+     * @param string $filename
+     * @param array $options
+     * @return Api2PdfResult|array
+     * @throws Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function imageFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
+    {
+        $apiClient = $this->_getClient();
+
+        $html = $this->_getHtmlFromTemplate($template, $variables);
+
+        if ($html && is_array($html)) {
+            return $html;
+        }
+
+        try {
+            $response = $apiClient->chromeHtmlToImage($html, $inline, $filename, $options);
+        } catch (Api2PdfException $e) {
+            $response = [ "success" => false, "error" => $e->getMessage() ];
+        }
+        return $response;
+    }
+
+    /**
+     * @param string $template
+     * @param array $variables
+     * @return array|string
+     * @throws Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function _getHtmlFromTemplate(string $template = '', array $variables = [])
+    {
+        if (!$template) {
+            return [ "success" => false, "error" => "No template provided." ];
+        }
+
+        $view = Craft::$app->getView();
+
+        $oldMode = $view->getTemplateMode();
+        $view->setTemplateMode(View::TEMPLATE_MODE_SITE);
+
+        if (!$view->doesTemplateExist($template)) {
+            $view->setTemplateMode($oldMode);
+            return [ "success" => false, "error" => "No template found." ];
+        }
+
+        $html = $view->renderTemplate($template, $variables);
+
+        $view->setTemplateMode($oldMode);
+
+        if (!$html) {
+            return [ "success" => false, "error" => "Template could not be rendered." ];
+        }
+
+        return $html;
     }
 }
