@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.2 - 2022-02-18
+### Fixed
+- Add default options to Settings model in case no `pdf-maker.php` config file exists
+
 ## 1.1.1 - 2022-02-18
 ### Changed
 - Improve read me
