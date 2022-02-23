@@ -66,7 +66,7 @@ class PdfController extends Controller
         $request = Craft::$app->getRequest();
         $htmlString = $request->getParam('html');
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.pdf');
         $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->pdfFromHtml($htmlString, $inline, $filename, $options);
@@ -93,7 +93,7 @@ class PdfController extends Controller
             $validatedVariables[$key] = $security->validateData($value);
         }
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.pdf');
         $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->pdfFromTemplate($template, $validatedVariables, $inline, $filename, $options);
@@ -109,7 +109,7 @@ class PdfController extends Controller
         $request = Craft::$app->getRequest();
         $url = $request->getParam('url');
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.pdf');
         $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->pdfFromUrl($url, $inline, $filename, $options);
@@ -128,7 +128,7 @@ class PdfController extends Controller
             $urls = [];
         }
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.pdf');
         $options = $this->_getOptions($request, 'pdf');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->merge($urls, $inline, $filename, $options);
@@ -144,7 +144,7 @@ class PdfController extends Controller
         $request = Craft::$app->getRequest();
         $htmlString = $request->getParam('html');
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.png');
         $options = $this->_getOptions($request, 'image');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->imageFromHtml($htmlString, $inline, $filename, $options);
@@ -171,7 +171,7 @@ class PdfController extends Controller
             $validatedVariables[$key] = $security->validateData($value);
         }
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.png');
         $options = $this->_getOptions($request, 'image');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->imageFromTemplate($template, $validatedVariables, $inline, $filename, $options);
@@ -187,7 +187,7 @@ class PdfController extends Controller
         $request = Craft::$app->getRequest();
         $url = $request->getParam('url');
         $inline = $this->_getInline($request);
-        $filename = $this->_getFilename($request);
+        $filename = $this->_getFilename($request, '.png');
         $options = $this->_getOptions($request, 'image');
         $redirect = $this->_getRedirect($request);
         $result = PdfMaker::$plugin->pdf->imageFromUrl($url, $inline, $filename, $options);
@@ -206,13 +206,14 @@ class PdfController extends Controller
 
     /**
      * @param $request
+     * @param $extension
      * @return string
      */
-    private function _getFilename($request): string
+    private function _getFilename($request, $extension): string
     {
         $filename = $request->getParam('filename') ?? '';
-        if (strpos(strtolower($filename),'.pdf',-4) === false) {
-            $filename .= '.pdf';
+        if (strpos(strtolower($filename),$extension,-4) === false) {
+            $filename .= $extension;
         }
         return $filename;
     }
