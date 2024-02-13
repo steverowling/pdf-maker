@@ -2,7 +2,7 @@
     "name": "springworks/pdf-maker",
     "description": "PDF creation using api2pdf v2",
     "type": "craft-plugin",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "keywords": [
         "craft",
         "cms",
@@ -23,7 +23,8 @@
     ],
     "require": {
         "craftcms/cms": "^4.0.0",
-        "api2pdf/api2pdf.php": "2.0.2"
+        "api2pdf/api2pdf.php": "2.0.2",
+        "php": "^8.0.2"
     },
     "autoload": {
         "psr-4": {
