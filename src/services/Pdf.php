@@ -91,7 +91,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function pdfFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -118,7 +118,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function pdfFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -146,7 +146,7 @@ class Pdf extends Component
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function pdfFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
+    public function pdfFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -171,7 +171,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function merge(array $urls = [], bool $inline = false, string $filename = '', array $options = [])
+    public function merge(array $urls = [], bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -201,7 +201,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function imageFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = [])
+    public function imageFromUrl(string $url = '', bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -228,7 +228,7 @@ class Pdf extends Component
      * @param array $options
      * @return Api2PdfResult|array
      */
-    public function imageFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = [])
+    public function imageFromHtml(string $html = '', bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -256,7 +256,7 @@ class Pdf extends Component
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function imageFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = [])
+    public function imageFromTemplate(string $template = '', array $variables = [], bool $inline = false, string $filename = '', array $options = []): Api2PdfResult|array
     {
         $apiClient = $this->_getClient();
 
@@ -283,7 +283,7 @@ class Pdf extends Component
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    private function _getHtmlFromTemplate(string $template = '', array $variables = [])
+    private function _getHtmlFromTemplate(string $template = '', array $variables = []): array|string
     {
         if (!$template) {
             return [ "success" => false, "error" => "No template provided." ];

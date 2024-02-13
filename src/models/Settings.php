@@ -40,14 +40,14 @@ class Settings extends Model
      *
      * @var string
      */
-    public $apiKey = '';
+    public string $apiKey = '';
 
     /**
      * PDF options
      *
      * @var array
      */
-    public $options = [
+    public array $options = [
         'pdf' => [
             "landscape" => false,
             "width" => "8.27in",
@@ -71,14 +71,14 @@ class Settings extends Model
      *
      * @var bool
      */
-    public $formieIntegration = false;
+    public bool $formieIntegration = false;
 
     /**
      * Commerce integration
      *
      * @var bool
      */
-    public $commerceIntegration = false;
+    public bool $commerceIntegration = false;
 
     // Public Methods
     // =========================================================================
