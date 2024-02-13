@@ -49,11 +49,11 @@ class PdfController extends Controller
     // =========================================================================
 
     /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
+     * @var    array|int|bool Allows anonymous access to this controller's actions.
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-    protected bool $allowAnonymous = true;
+    protected array|int|bool $allowAnonymous = true;
 
     // Public Methods
     // =========================================================================
